@@ -1,0 +1,520 @@
+/* =========================================================
+   For Nishi 💌  —  style.css
+   Sections:
+   1. Colors & basics
+   2. Card & screens
+   3. Text & buttons
+   4. Envelope (screen 1)
+   5. Note paper (screen 2)
+   6. Question screen (bubble, cloud, buttons)
+   7. Characters & moods (faces change with the mood)
+   8. Sticker friends in the corners
+   9. Weather (rain, gloomy)
+   10. Party (dance, floaters)
+   11. Plan, day & final screens
+   12. Secret reset
+   13. Animations
+   ========================================================= */
+
+
+/* ---------- 1. Colors & basics ---------- */
+:root {
+  --cream: #FFF8F1;
+  --rose: #E8798F;
+  --rose-dark: #C95B72;
+  --peach: #FFC6A8;
+  --sage: #A8C3A0;
+  --plum: #4A2C3A;
+  --plum-soft: #7A5A68;
+  --white: #FFFFFF;
+  --line: #F1DFE3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-family: "Nunito", system-ui, sans-serif;
+  color: var(--plum);
+  background-color: var(--cream);
+  background-image:
+    radial-gradient(circle at 15% 20%, #FFE3E8 0, transparent 40%),
+    radial-gradient(circle at 85% 80%, #FFE9DC 0, transparent 40%);
+  overflow-x: hidden;
+  transition: background-color 1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ---------- 2. Card & screens ---------- */
+.card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 22px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(74, 44, 58, 0.12);
+  text-align: center;
+}
+
+/* Only the screen with class "active" is visible */
+.screen { display: none; }
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: fadeUp 0.5s ease;
+}
+
+
+/* ---------- 3. Text & buttons ---------- */
+h1 {
+  font-family: "Fredoka", sans-serif;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  margin: 0;
+}
+p { margin: 0; line-height: 1.5; }
+.small { font-size: 0.95rem; color: var(--plum-soft); }
+.hint  { font-size: 0.85rem; color: var(--plum-soft); opacity: 0.8; }
+
+.btn {
+  font-family: "Fredoka", sans-serif;
+  font-size: 1.1rem;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: font-size 0.3s, padding 0.3s, transform 0.1s;
+}
+.btn:active { transform: translateY(3px); }
+
+.btn-main {
+  background: var(--rose);
+  color: var(--white);
+  box-shadow: 0 5px 0 var(--rose-dark);
+}
+.btn-main:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-no {
+  background: var(--white);
+  color: var(--plum);
+  border: 2px solid var(--line);
+}
+
+/* Note button stays hidden until typing finishes */
+.hidden-btn { visibility: hidden; }
+.hidden-btn.show { visibility: visible; animation: fadeUp 0.4s ease; }
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--plum-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
+/* ---------- 4. Envelope (screen 1) ---------- */
+.envelope {
+  position: relative;
+  width: 210px;
+  height: 140px;
+  margin: 80px 0 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  animation: wiggle 2.5s ease-in-out infinite;
+}
+.envelope span { position: absolute; display: block; }
+
+.env-back   { z-index: 0; inset: 0; background: var(--rose-dark); border-radius: 12px; }
+.env-letter {
+  left: 14px; right: 14px; top: 10px; height: 118px;
+  background: var(--white);
+  border-radius: 8px;
+  font-size: 34px;
+  padding-top: 12px;
+  transition: transform 0.6s ease 0.35s;
+  z-index: 1;
+}
+.env-front {
+  inset: 0;
+  background: var(--rose);
+  border-radius: 12px;
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+  z-index: 2;
+}
+.env-flap {
+  left: 0; right: 0; top: 0; height: 100%;
+  background: #D9687F;
+  border-radius: 12px;
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+  transform-origin: top;
+  transition: transform 0.5s ease;
+  z-index: 3;
+}
+
+/* When opened: flap flips up, letter slides out */
+.envelope.open { animation: none; }
+.envelope.open .env-flap   { transform: rotateX(180deg); z-index: 0; }
+.envelope.open .env-letter { transform: translateY(-70px); }
+
+
+/* ---------- 5. Note paper (screen 2) ---------- */
+.note-paper {
+  width: 100%;
+  min-height: 240px;
+  padding: 22px 20px;
+  text-align: left;
+  font-size: 1.1rem;
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  /* lined paper */
+  background-image: repeating-linear-gradient(transparent 0 31px, #F7E8EC 31px 32px);
+  background-position: 0 16px; /* lines sit under the text */
+  line-height: 32px;
+}
+.note-paper p { line-height: 32px; }
+
+
+/* ---------- 6. Question screen ---------- */
+.quote {
+  font-style: italic;
+  color: var(--plum-soft);
+  font-size: 0.95rem;
+}
+
+.bubble {
+  position: relative;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 10px 16px;
+  font-weight: 700;
+  max-width: 100%;
+}
+.bubble::before { /* little tail pointing up to the mascot */
+  content: "";
+  position: absolute;
+  top: -9px; left: 50%;
+  width: 14px; height: 14px;
+  background: var(--white);
+  border-left: 2px solid var(--line);
+  border-top: 2px solid var(--line);
+  transform: translateX(-50%) rotate(45deg);
+}
+.bubble.pop { animation: pop 0.35s ease; }
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 70px;
+}
+
+/* No button when it runs away */
+.btn-no.running {
+  position: fixed;
+  z-index: 10;
+  transition: left 0.25s ease, top 0.25s ease;
+}
+
+/* Rain cloud above the mascot (hidden until sad) */
+.cloud {
+  display: none;
+  font-size: 44px;
+  margin-bottom: -26px;
+  animation: drift 3s ease-in-out infinite;
+}
+body[data-weather="cloudy"] .cloud,
+body[data-weather="rain"]   .cloud,
+body[data-weather="gloomy"] .cloud { display: block; }
+
+
+/* ---------- 7. Characters & moods ---------- */
+.mascot .char { width: 130px; height: 130px; }
+.char { display: block; overflow: visible; animation: bob 3s ease-in-out infinite; }
+
+/* Hide every face part, then show only the parts for the current mood */
+.char .eyes, .char .mouth, .char .tears { display: none; }
+
+body[data-mood="normal"] .eyes-open,  body[data-mood="normal"] .m-smile,
+body[data-mood="happy"]  .eyes-happy, body[data-mood="happy"]  .m-big,
+body[data-mood="pout"]   .eyes-open,  body[data-mood="pout"]   .m-pout,
+body[data-mood="sad"]    .eyes-sad,   body[data-mood="sad"]    .m-sad,
+body[data-mood="sad"]    .tear-one,
+body[data-mood="cry"]    .eyes-cry,   body[data-mood="cry"]    .m-cry,
+body[data-mood="cry"]    .tears-stream { display: inline; }
+
+/* Little face animations */
+.m-pout { animation: wobble 0.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.tear-one, .tears-stream path { animation: tearFall 1.2s ease-in infinite; transform-box: fill-box; }
+.tears-stream path:nth-child(2) { animation-delay: 0.5s; }
+
+/* Melting on the last "No" */
+body.melting .mascot .char { animation: melt 2s ease-in-out infinite; transform-origin: bottom; }
+
+
+/* ---------- 8. Sticker friends in the corners ---------- */
+.friend {
+  position: fixed;
+  z-index: 1;
+  width: 70px;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.4s, transform 0.4s cubic-bezier(.3, 1.6, .5, 1);
+  pointer-events: none;
+}
+.friend .char { width: 70px; height: 70px; }
+.friend.show { opacity: 1; transform: scale(1); }
+
+#friend-bunny  { top: 12px;    left: 10px; }
+#friend-cat    { top: 12px;    right: 10px; }
+#friend-frog   { bottom: 14px; left: 10px; }
+#friend-heart  { bottom: 14px; right: 42px; }
+#friend-flower { bottom: 18px; left: 50%; margin-left: -20px; width: 40px; font-size: 34px; text-align: center; }
+
+/* Bigger stickers on laptop screens */
+@media (min-width: 700px) {
+  .friend, .friend .char { width: 100px; height: 100px; }
+  #friend-bunny, #friend-cat   { top: 8vh; }
+  #friend-frog, #friend-heart  { bottom: 8vh; }
+  #friend-bunny, #friend-frog  { left: 10vw; }
+  #friend-cat, #friend-heart   { right: 10vw; }
+}
+
+/* The bunny's "pls" sign */
+.sign {
+  display: none;
+  position: absolute;
+  bottom: -14px; left: 50%;
+  transform: translateX(-50%) rotate(-6deg);
+  white-space: nowrap;
+  font-family: "Fredoka", sans-serif;
+  font-size: 0.75rem;
+  background: var(--white);
+  border: 2px solid var(--plum);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+.friend.holding-sign .sign { display: block; }
+
+
+/* ---------- 9. Weather ---------- */
+.rain, .floaters {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.rain { z-index: 1; }
+.floaters { z-index: 1; } /* behind the card so text stays readable */
+
+.drop {
+  position: absolute;
+  top: -30px;
+  width: 2px;
+  height: 18px;
+  background: linear-gradient(transparent, #7EC8E3);
+  animation: fall linear infinite;
+}
+
+/* Gloomy: background goes grey, friends lose their color.
+   The Yes button stays bright on purpose 😉 */
+body[data-weather="gloomy"] { background-color: #DCD6D9; background-image: none; }
+body[data-weather="gloomy"] .friend { filter: grayscale(0.7); }
+
+
+/* ---------- 10. Party ---------- */
+body.party .char { animation: dance 0.8s ease-in-out infinite; }
+body.party .friend:nth-of-type(2) .char { animation-delay: 0.2s; }
+body.party .friend:nth-of-type(3) .char { animation-delay: 0.4s; }
+body.party .friend:nth-of-type(4) .char { animation-delay: 0.6s; }
+
+body.waving .friend .char { animation: wave 1.2s ease-in-out infinite; transform-origin: bottom center; }
+
+.big-yay {
+  font-size: 2.6rem;
+  color: var(--rose);
+  animation: bounce 0.9s ease infinite;
+}
+
+.floater {
+  position: absolute;
+  bottom: -60px;
+  animation: floatUp linear forwards;
+}
+
+
+/* ---------- 11. Plan, day & final screens ---------- */
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.option:hover { border-color: var(--peach); }
+.option.picked { border-color: var(--rose); background: #FFF0F3; animation: bounce 0.6s ease; }
+.opt-emoji { font-size: 2.2rem; }
+.opt-title { font-family: "Fredoka", sans-serif; font-size: 1.1rem; }
+.opt-joke  { font-size: 0.8rem; color: var(--plum-soft); line-height: 1.3; }
+
+.label {
+  align-self: flex-start;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: -6px;
+}
+.field {
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--plum);
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  resize: none;
+}
+.field:focus { outline: none; border-color: var(--rose); }
+
+.chips { display: flex; gap: 8px; width: 100%; }
+.chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--plum);
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  cursor: pointer;
+}
+.chip.selected { background: var(--rose); border-color: var(--rose); color: var(--white); }
+
+.day-hint { color: var(--rose-dark); font-size: 0.9rem; min-height: 1.2em; }
+
+.banner {
+  font-family: "Fredoka", sans-serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  background: var(--rose);
+  padding: 8px 22px;
+  border-radius: 12px;
+  transform: rotate(-3deg);
+  box-shadow: 0 4px 0 var(--rose-dark);
+  animation: bannerBounce 1.2s ease infinite;
+}
+
+.summary {
+  width: 100%;
+  background: var(--white);
+  border: 2px dashed var(--peach);
+  border-radius: 18px;
+  padding: 10px 18px;
+  text-align: left;
+}
+.summary p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.summary p:last-child { border-bottom: none; }
+.summary span { color: var(--plum-soft); }
+.summary b { text-align: right; }
+
+
+/* ---------- 12. Secret reset ---------- */
+.secret-flower {
+  position: fixed;
+  right: 8px; bottom: 6px;
+  z-index: 20;
+  font-size: 14px;
+  opacity: 0.45;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: default;
+}
+.reset-box {
+  position: fixed;
+  right: 10px; bottom: 44px;
+  z-index: 20;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+}
+.reset-box[hidden] { display: none; }
+.reset-box button { font: inherit; border-radius: 8px; border: 1px solid var(--line); padding: 4px 8px; background: var(--cream); cursor: pointer; }
+
+
+/* ---------- 13. Animations ---------- */
+@keyframes fadeUp   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pop      { 0% { transform: scale(0.85); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes bob      { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes wiggle   { 0%, 100% { transform: rotate(0); } 10% { transform: rotate(-4deg); } 20% { transform: rotate(4deg); } 30% { transform: rotate(0); } }
+@keyframes wobble   { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(1.5px); } }
+@keyframes tearFall { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+@keyframes melt     { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.15, 0.8); } }
+@keyframes drift    { 0%, 100% { transform: translateX(-6px); } 50% { transform: translateX(6px); } }
+@keyframes fall     { to { transform: translateY(110vh); } }
+@keyframes dance    {
+  0%   { transform: translateY(0) rotate(-8deg); }
+  25%  { transform: translateY(-14px) rotate(0); }
+  50%  { transform: translateY(0) rotate(8deg); }
+  75%  { transform: translateY(-14px) rotate(0); }
+  100% { transform: translateY(0) rotate(-8deg); }
+}
+@keyframes wave     { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+@keyframes bounce   { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-8px); } }
+@keyframes bannerBounce { 0%, 100% { transform: rotate(-3deg) translateY(0); } 40% { transform: rotate(-3deg) translateY(-8px); } }
+@keyframes floatUp  { to { transform: translateY(-115vh) rotate(20deg); opacity: 0.2; } }
+
+/* Calmer version if her phone has "reduce motion" turned on */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

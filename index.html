@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Nishi 💌</title>
+
+  <!-- Link preview (what shows when you send the link in chat) -->
+  <meta property="og:title" content="For Nishi 💌">
+  <meta property="og:description" content="Someone made something for you…">
+  <meta name="theme-color" content="#FFF8F1">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Our styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============ BACKGROUND LAYERS ============ -->
+  <div id="rain" class="rain"></div>          <!-- rain drops (sad mode) -->
+  <div id="floaters" class="floaters"></div>  <!-- hearts & balloons (party mode) -->
+
+  <!-- Sticker friends in the corners (they appear one by one on each "No") -->
+  <div class="friend" id="friend-bunny" data-char="bunny">
+    <span class="sign" id="bunny-sign">pls 🥹</span>
+  </div>
+  <div class="friend" id="friend-cat" data-char="cat"></div>
+  <div class="friend" id="friend-frog" data-char="frog"></div>
+  <div class="friend" id="friend-heart" data-char="heart"></div>
+  <div class="friend flower" id="friend-flower">🥀</div>
+
+
+  <!-- ============ MAIN CARD (all screens live here) ============ -->
+  <main class="card">
+
+    <!-- SCREEN 1: Intro -->
+    <section class="screen" id="screen-intro">
+      <p class="small">Hi Nishi 👋</p>
+      <h1>Someone made something for you…</h1>
+
+      <button class="envelope" id="envelope" aria-label="Open the letter">
+        <span class="env-back"></span>
+        <span class="env-letter">💖</span>
+        <span class="env-front"></span>
+        <span class="env-flap"></span>
+      </button>
+
+      <p class="hint">tap the envelope 💌</p>
+    </section>
+
+
+    <!-- SCREEN 2: Little note (types itself) -->
+    <section class="screen" id="screen-note">
+      <div class="note-paper" id="note-text"></div>
+      <button class="btn btn-main hidden-btn" id="note-next">Okay… show me 👀</button>
+    </section>
+
+
+    <!-- SCREEN 3: The question -->
+    <section class="screen" id="screen-question">
+      <p class="quote">“How will you know if you never try?” 🙂</p>
+
+      <div class="cloud" id="cloud">☁️</div>
+      <div class="mascot" data-char="blob"></div>
+      <p class="bubble" id="bubble" aria-live="polite">hi… 👉👈</p>
+
+      <h1>Nishi, will you go on a date with me?</h1>
+
+      <div class="buttons">
+        <button class="btn btn-main" id="yes-btn">Yes 💖</button>
+        <button class="btn btn-no" id="no-btn">No</button>
+      </div>
+    </section>
+
+
+    <!-- SCREEN 4: She said YES! -->
+    <section class="screen" id="screen-yes">
+      <div class="mascot" data-char="blob"></div>
+      <h1 class="big-yay">YAAAY!!! 🎉</h1>
+      <p>You said yes!! I knew you had good taste 😌</p>
+      <p class="hint">(tap anywhere for more confetti)</p>
+      <button class="btn btn-main" id="plan-btn">Let's plan it →</button>
+    </section>
+
+
+    <!-- SCREEN 5: Pick the date type -->
+    <section class="screen" id="screen-plan">
+      <h1>Pick our date 💖</h1>
+      <p>Your call. I'm happy with anything.</p>
+
+      <div class="options">
+        <button class="option" data-type="Coffee" data-emoji="☕">
+          <span class="opt-emoji">☕</span>
+          <span class="opt-title">Coffee</span>
+          <span class="opt-joke">I'll pretend I don't add 4 sugars</span>
+        </button>
+        <button class="option" data-type="Food" data-emoji="🍜">
+          <span class="opt-emoji">🍜</span>
+          <span class="opt-title">Food</span>
+          <span class="opt-joke">You can steal my fries. Legally.</span>
+        </button>
+        <button class="option" data-type="Movie" data-emoji="🎬">
+          <span class="opt-emoji">🎬</span>
+          <span class="opt-title">Movie</span>
+          <span class="opt-joke">You pick. I won't complain (much)</span>
+        </button>
+        <button class="option" data-type="Zoo outing" data-emoji="🦒">
+          <span class="opt-emoji">🦒</span>
+          <span class="opt-title">Zoo outing</span>
+          <span class="opt-joke">We rate the animals' outfits</span>
+        </button>
+      </div>
+    </section>
+
+
+    <!-- SCREEN 6: Pick the day & time -->
+    <section class="screen" id="screen-day">
+      <h1>When are you free? 📅</h1>
+
+      <label class="label" for="date-input">Pick a day</label>
+      <input type="date" id="date-input" class="field">
+
+      <p class="label">What time?</p>
+      <div class="chips">
+        <button class="chip" data-time="Morning"><span>🌤️</span>Morning</button>
+        <button class="chip" data-time="Afternoon"><span>☀️</span>Afternoon</button>
+        <button class="chip" data-time="Evening"><span>🌙</span>Evening</button>
+      </div>
+
+      <label class="label" for="note-input">Anything you want me to know? (optional)</label>
+      <textarea id="note-input" class="field" rows="2" maxlength="200"
+                placeholder="e.g. only if you buy ice cream 🍦"></textarea>
+
+      <p class="day-hint" id="day-hint"></p>
+      <button class="btn btn-main" id="confirm-btn" disabled>Lock it in 💖</button>
+      <button class="link-btn" id="back-btn">← change the plan</button>
+    </section>
+
+
+    <!-- SCREEN 7: Final — it's a date! -->
+    <section class="screen" id="screen-final">
+      <div class="banner">🎉 It's a date! 🎉</div>
+      <div class="mascot" data-char="blob"></div>
+      <h1>See you soon, Nishi 😊</h1>
+
+      <div class="summary">
+        <p><span>Plan</span>  <b id="sum-type"></b></p>
+        <p><span>Day</span>   <b id="sum-day"></b></p>
+        <p><span>Time</span>  <b id="sum-time"></b></p>
+        <p id="sum-note-row"><span>Note</span> <b id="sum-note"></b></p>
+      </div>
+
+      <p class="small">I'll text you the details.<br>(Yes, I'm already overthinking what to wear.)</p>
+    </section>
+
+
+    <!-- SCREEN 8: Final "No" — kind ending -->
+    <section class="screen" id="screen-no">
+      <div class="mascot" data-char="blob"></div>
+      <h1>That's okay, Nishi 🙂</h1>
+      <p>Thanks for hearing me out.<br>Seriously, still glad I asked.</p>
+      <p class="small">The little guys say bye 👋</p>
+    </section>
+
+  </main>
+
+
+  <!-- ============ SECRET RESET (only you know) ============ -->
+  <button class="secret-flower" id="secret-flower" aria-hidden="true" tabindex="-1">🌸</button>
+  <div class="reset-box" id="reset-box" hidden>
+    <span>Reset page?</span>
+    <button id="reset-yes">Reset</button>
+    <button id="reset-cancel">Cancel</button>
+  </div>
+
+
+  <!-- Confetti library + our script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
