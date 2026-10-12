@@ -56,6 +56,7 @@ const DODGE_LINES = [
 // Names used to save things in the browser
 const SAVE_KEY = "forNishi_answer";
 const VISITS_KEY = "forNishi_visits";
+const MUTE_KEY = "forNishi_muted"; // "1" = this is your device, don't send emails
 
 // Things that change while she uses the page
 let noCount = 0;       // how many times she pressed No
@@ -373,7 +374,7 @@ function finalNo() {
   sendEmail(EMAIL.templateUpdate, {
     emoji: "🙂",
     title: "Nishi said no",
-    message: "She pressed No " + noCount + " times. Still proud of you for asking 🫶",
+    message: "She pressed No " + noCount + " times. Still proud of you for asking 🫶 (" + deviceInfo() + ")",
   });
 }
 
@@ -528,7 +529,7 @@ $("confirm-btn").addEventListener("click", () => {
     date_day: plan.day,
     date_time: plan.time,
     her_note: plan.note || "(no note)",
-    no_count: noText,
+    no_count: noText + " · " + deviceInfo(),
   });
 
   showFinal(answer);
@@ -552,6 +553,11 @@ function sendEmail(templateId, params, triesLeft = 2) {
   // Not set up yet? Just log it.
   if (EMAIL.serviceId.startsWith("PASTE") || templateId.startsWith("PASTE")) {
     console.log("📧 Email not set up yet. Would send:", params);
+    return;
+  }
+  // Your own device (muted)? Don't send.
+  if (readStorage(MUTE_KEY) === "1") {
+    console.log("📧 Muted on this device. Would send:", params);
     return;
   }
 
@@ -584,6 +590,31 @@ function sendEmail(templateId, params, triesLeft = 2) {
     });
 }
 
+// Which phone/computer and browser opened the page, e.g. "Android · Chrome"
+function deviceInfo() {
+  const ua = navigator.userAgent;
+
+  let device = "Unknown device";
+  if (/Android/i.test(ua)) device = "Android";
+  else if (/iPhone/i.test(ua)) device = "iPhone";
+  else if (/iPad/i.test(ua)) device = "iPad";
+  else if (/Windows/i.test(ua)) device = "Windows PC";
+  else if (/Macintosh/i.test(ua)) device = "Mac";
+  else if (/Linux/i.test(ua)) device = "Linux PC";
+
+  let browser = "a browser";
+  if (/FBAN|FBAV|FB_IAB/i.test(ua)) browser = "Messenger/Facebook";
+  else if (/Instagram/i.test(ua)) browser = "Instagram";
+  else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Internet";
+  else if (/Edg\//i.test(ua)) browser = "Edge";
+  else if (/OPR\//i.test(ua)) browser = "Opera";
+  else if (/Firefox|FxiOS/i.test(ua)) browser = "Firefox";
+  else if (/Chrome|CriOS/i.test(ua)) browser = "Chrome";
+  else if (/Safari/i.test(ua)) browser = "Safari";
+
+  return device + " · " + browser;
+}
+
 // Tells you she opened the page
 function sendOpenedEmail(saved) {
   const visits = Number(readStorage(VISITS_KEY) || 0) + 1;
@@ -595,6 +626,7 @@ function sendOpenedEmail(saved) {
   let message = "Fingers crossed 🤞";
   if (saved && saved.answer === "yes") message = "She already said YES 💖 Probably checking the plan again.";
   if (saved && saved.answer === "no") message = "She already answered earlier.";
+  message += " (Opened on " + deviceInfo() + ")";
 
   sendEmail(EMAIL.templateUpdate, { emoji: "👀", title: title, message: message });
 }
@@ -614,6 +646,7 @@ $("secret-flower").addEventListener("click", () => {
 
   if (flowerTaps >= 7) {
     flowerTaps = 0;
+    updateMuteButton();
     $("reset-box").hidden = false;
   }
 });
@@ -624,6 +657,17 @@ $("reset-yes").addEventListener("click", () => {
     localStorage.removeItem(VISITS_KEY);
   } catch (e) { /* ignore */ }
   location.reload();
+});
+
+// Mute / unmute emails on this device (use it on YOUR phone and PC)
+function updateMuteButton() {
+  $("mute-btn").textContent = readStorage(MUTE_KEY) === "1" ? "Unmute emails" : "Mute emails here";
+}
+
+$("mute-btn").addEventListener("click", () => {
+  if (readStorage(MUTE_KEY) === "1") writeStorage(MUTE_KEY, "0");
+  else writeStorage(MUTE_KEY, "1");
+  updateMuteButton();
 });
 
 $("reset-cancel").addEventListener("click", () => {
@@ -639,7 +683,14 @@ function start() {
   setWeather("clear");
 
   const saved = loadAnswer();
-  sendOpenedEmail(saved);
+
+  // Chrome can secretly pre-load a page while you type the link.
+  // Only send the "opened" email when the page is really shown.
+  if (document.prerendering) {
+    document.addEventListener("prerenderingchange", () => sendOpenedEmail(saved), { once: true });
+  } else {
+    sendOpenedEmail(saved);
+  }
 
   if (saved && saved.answer === "yes") {
     // She already said yes before -> show the plan again
